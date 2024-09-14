@@ -2,48 +2,113 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+// package frc.robot;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
+// import com.ctre.phoenix6.StatusCode;
+// import com.ctre.phoenix6.configs.FeedbackConfigs;
+// import com.ctre.phoenix6.configs.MotionMagicConfigs;
+// import com.ctre.phoenix6.configs.Slot0Configs;
+// import com.ctre.phoenix6.configs.TalonFXConfiguration;
+// import com.ctre.phoenix6.controls.MotionMagicVoltage;
+// import com.ctre.phoenix6.hardware.CANcoder;
+// import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.PhysicsSim;
+// import edu.wpi.first.math.MathUtil;
+// import edu.wpi.first.wpilibj.TimedRobot;
+// import edu.wpi.first.wpilibj.XboxController;
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import frc.robot.generated.TunerConstants;
+// import frc.robot.subsystems.PhysicsSim;
+// import au.grapplerobotics.LaserCan;
+// import frc.robot.Robot;
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
-public class FrankenArm extends TimedRobot {
+// /**
+//  * The VM is configured to automatically run this class, and to call the functions corresponding to
+//  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+//  * the package after creating this project, you must also update the build.gradle file in the
+//  * project.
+//  */
+
+// public class FrankenArm extends SubsystemBase {
+  
+//   public LaserCan lc;
+//   public LaserCan lc2;
+//   public TalonFX IntakeFeedMotor = new TalonFX(TunerConstants.IntakeFeed);
+//   public TalonFX IntakeCenterMotor = new TalonFX(TunerConstants.IntakeCenter);
+//   public TalonFX LauncherFeedMotor = new TalonFX(TunerConstants.LaunchFeed);
+//   public TalonFX LaunchRtFlywheel = new TalonFX(TunerConstants.LaunchRtFlywheel);
+//   public TalonFX LaunchLtFlywheel = new TalonFX(TunerConstants.LaunchLtFlywheel);
+ 
+//   double setpoint1 = 05;
+//   double setpoint2 = 30;
+//   double setpoint3 = 60;
+//   double fullSpeedAhead = 1;
+//   double Die = 0;
+//   double warmup = 0.5;  
+
+//     public void initDefaultCommand() {
+//     if (m_joystick.getRawButton(8)) {
+//       m_fx.setControl(m_mmReq.withPosition(setpoint1));
+//       LaunchRtFlywheel.set(warmup);
+//       LaunchLtFlywheel.set(warmup);
+//       }
+      
+
+//     if (m_joystick.getRawButton(1)) {
+//       m_fx.setControl(m_mmReq.withPosition(setpoint1));
+//       IntakeFeedMotor.set(fullSpeedAhead);
+//       IntakeCenterMotor.set(fullSpeedAhead);
+//       LauncherFeedMotor.set(fullSpeedAhead);
+//       shootOff();
+//       //checkSet();
+//       intakeOff();
+//       }
+
+//     if (m_joystick.getRawButton(2)) {
+//       m_fx.setControl(m_mmReq.withPosition(setpoint2));
+//       }
+
+//     if (m_joystick.getRawButton(3)) {
+//       m_fx.setControl(m_mmReq.withPosition(setpoint3));
+//       }
+
+//       if (m_joystick.getRawButton(4)) {
+//       m_fx.setControl(m_mmReq.withPosition(setpoint1));
+//       LaunchRtFlywheel.set(fullSpeedAhead);
+//       LaunchLtFlywheel.set(fullSpeedAhead);
+//       LauncherFeedMotor.set(fullSpeedAhead);
+//       }
+//     }
+
+//     public void shootOff(){
+//     LaserCan.Measurement measurement = lc.getMeasurement();
+//     if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 100) {
+//       IntakeFeedMotor.set(Die);
+//       IntakeCenterMotor.set(Die);
+//       LauncherFeedMotor.set(Die);
+//     }
+//   }
+  
+//   public void intakeOff(){
+//     LaserCan.Measurement measurement = lc2.getMeasurement();
+//     if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 100) {
+//       LauncherFeedMotor.set(Die);
+//     }
+//   }
+
+//   public void checkSet(){
+//     var k_tolerance.setTolerance(5, 10);
+//     if(MathUtil.isNear(m_ex.measurement, setpoint1, k_tolerance)) {
+//       LauncherFeedMotor.set(0.5);
+//     }
+//   }
+//}
+
+//public class FrankenArm extends TimedRobot {
   private final TalonFX m_fx = new TalonFX(1, "canivore");
   public final CANcoder m_ex = new CANcoder(1, "canivore");
   private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
-  private final XboxController m_joystick = new XboxController(0);
-  
-  public LaserCan lc;
-  public LaserCan lc2;
-  public TalonFX IntakeFeedMotor = new TalonFX(TunerConstants.IntakeFeed);
-  public TalonFX IntakeCenterMotor = new TalonFX(TunerConstants.IntakeCenter);
-  public TalonFX LauncherFeedMotor = new TalonFX(TunerConstants.LaunchFeed);
-  public TalonFX LaunchRtFlywheel = new TalonFX(TunerConstants.LaunchRtFlywheel);
-  public TalonFX LaunchLtFlywheel = new TalonFX(TunerConstants.LaunchLtFlywheel);
- 
-  double setpoint1 = 05;
-  double setpoint2 = 30;
-  double setpoint3 = 60;
-  double fullSpeedAhead = 1;
-  double Die = 0;
-  double warmup = 0.5;
+  private final XboxController m_joystick = new XboxController(1);
 
   private int m_printCount = 0;
 
@@ -117,63 +182,7 @@ public class FrankenArm extends TimedRobot {
   public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {
-
-    if (m_joystick.getRawButton(8)) {
-      m_fx.setControl(m_mmReq.withPosition(setpoint1));
-      LaunchRtFlywheel.set(warmup);
-      LaunchLtFlywheel.set(warmup);
-      }
-      
-
-    if (m_joystick.getRawButton(1)) {
-      m_fx.setControl(m_mmReq.withPosition(setpoint1));
-      IntakeFeedMotor.set(fullSpeedAhead);
-      IntakeCenterMotor.set(fullSpeedAhead);
-      LauncherFeedMotor.set(fullSpeedAhead);
-      shootOff();
-      intakeOff();
-      }
-
-    if (m_joystick.getRawButton(2)) {
-      m_fx.setControl(m_mmReq.withPosition(setpoint2));
-      }
-
-    if (m_joystick.getRawButton(3)) {
-      m_fx.setControl(m_mmReq.withPosition(setpoint3));
-      }
-
-      if (m_joystick.getRawButton(4)) {
-      m_fx.setControl(m_mmReq.withPosition(setpoint1));
-      LaunchRtFlywheel.set(fullSpeedAhead);
-      LaunchLtFlywheel.set(fullSpeedAhead);
-      LauncherFeedMotor.set(fullSpeedAhead);
-      }
-  }
-
-  public void shootOff(){
-    LaserCan.Measurement measurement = lc.getMeasurement();
-    if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 100) {
-      IntakeFeedMotor.set(Die);
-      IntakeCenterMotor.set(Die);
-      LauncherFeedMotor.set(Die);
-    }
-  }
-  
-  public void intakeOff(){
-    LaserCan.Measurement measurement = lc2.getMeasurement();
-    if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 100) {
-      LauncherFeedMotor.set(Die);
-    }
-  }
-
-  // public void checkSet(){
-  //   m_ex.measurement = m_ex.getAbsolutePosition();
-  //  if (m_ex.measurement = setpoint1){
-  //  LauncherFeedMotor.set(0.5);
-  //  }
-  //  }
-
+  public void teleopPeriodic() {}
 
   @Override
   public void disabledInit() {}
