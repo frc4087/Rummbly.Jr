@@ -18,10 +18,13 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.PhysicsSim;
 import au.grapplerobotics.LaserCan;
 import frc.robot.Robot;
+//import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -45,23 +48,29 @@ public class FrankenArm extends SubsystemBase {
   public final CommandXboxController m_joystick = new CommandXboxController(1);
   public final double k_tolerance = 3.0;
   public boolean isChecking = false;
+
+  Trigger xButton = m_joystick.x();
+  Trigger yButton = m_joystick.y();
+  Trigger aButton = m_joystick.a();
+  Trigger bButton = m_joystick.b();
  
   double setpoint1 = 05;
   double setpoint2 = 10;
   double setpoint3 = 20;
   double fullSpeedAhead = 1;
   double Die = 0;
+
   double warmup = 0.5;  
 
     public void initDefaultCommand() {
-    if (m_joystick.button(8).getAsBoolean()) {
-      m_fx.setControl(m_mmReq.withPosition(setpoint1));
-      LaunchRtFlywheel.set(warmup);
-      LaunchLtFlywheel.set(warmup);
-      }
+        
+    // if (m_joystick.button(8).getAsBoolean()) {
+    //   m_fx.setControl(m_mmReq.withPosition(setpoint1));
+    //   LaunchRtFlywheel.set(warmup);
+    //   LaunchLtFlywheel.set(warmup);
+    //   }
       
-
-    if (m_joystick.button(1).getAsBoolean()) {
+    if (m_joystick.a().getAsBoolean()) {
       m_fx.setControl(m_mmReq.withPosition(setpoint1));
       IntakeFeedMotor.set(fullSpeedAhead);
       IntakeCenterMotor.set(fullSpeedAhead);
@@ -71,15 +80,15 @@ public class FrankenArm extends SubsystemBase {
       intakeOff();
       }
 
-    if (m_joystick.button(2).getAsBoolean()) {
+    if (m_joystick.b().getAsBoolean()) {
       m_fx.setControl(m_mmReq.withPosition(setpoint2));
       }
 
-    if (m_joystick.button(3).getAsBoolean()) {
+    if (m_joystick.x().getAsBoolean()) {
       m_fx.setControl(m_mmReq.withPosition(setpoint3));
       }
 
-    if (m_joystick.button(4).getAsBoolean()) {
+    if (m_joystick.y().getAsBoolean()) {
       //m_fx.setControl(m_mmReq.withPosition(setpoint1));
       LaunchRtFlywheel.set(1);
       LaunchLtFlywheel.set(1);

@@ -15,7 +15,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
-//import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.PhysicsSim;
 
 public final class Main extends TimedRobot{
