@@ -5,12 +5,17 @@
 package frc.robot;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+
+import au.grapplerobotics.LaserCan;
+
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -18,11 +23,21 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class RobotContainer {
+
+  public LaserCan LaunchSensor = new LaserCan(TunerConstants.LaunchSensor);
+  public LaserCan IntakeSensor = new LaserCan(TunerConstants.IntakeSensor);
+  public TalonFX IntakeFeedMotor = new TalonFX(TunerConstants.IntakeFeed);
+  public TalonFX IntakeCenterMotor = new TalonFX(TunerConstants.IntakeCenter);
+  public TalonFX LauncherFeedMotor = new TalonFX(TunerConstants.LaunchFeed);
+  public TalonFX LaunchRtFlywheel = new TalonFX(TunerConstants.LaunchRtFlywheel);
+  public TalonFX LaunchLtFlywheel = new TalonFX(TunerConstants.LaunchLtFlywheel);
+
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+  public final CommandXboxController m_joystick = new CommandXboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
