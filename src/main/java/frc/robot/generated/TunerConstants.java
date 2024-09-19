@@ -107,7 +107,6 @@ public class TunerConstants {
             .withSteerMotorInitialConfigs(steerInitialConfigs)
             .withCANcoderInitialConfigs(cancoderInitialConfigs);
 
-
     // Front Left
     private static final int kFrontLeftDriveMotorId = 0;
     private static final int kFrontLeftSteerMotorId = 1;
@@ -169,4 +168,5 @@ public class TunerConstants {
         public static final int IntakeFeed = 20, IntakeCenter = 21, IntakeSensor = 22;
         public static final int ArmAngle = 30, ArmSensor = 31, LaunchFeed = 32; 
         public static final int LaunchRtFlywheel = 33, LaunchLtFlywheel = 34, LaunchSensor = 35;
+
 }

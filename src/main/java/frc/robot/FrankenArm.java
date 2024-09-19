@@ -12,10 +12,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
+// import edu.wpi.first.math.MathUtil;
+// import edu.wpi.first.wpilibj.TimedRobot;
+// import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -57,44 +59,40 @@ public class FrankenArm extends SubsystemBase {
   double setpoint1 = 05;
   double setpoint2 = 10;
   double setpoint3 = 20;
-  double fullSpeedAhead = 1;
+  double fullSpeedAhead = 0.65;
   double Die = 0;
-
   double warmup = 0.5;  
 
-    public void initDefaultCommand() {
-        
-    // if (m_joystick.button(8).getAsBoolean()) {
-    //   m_fx.setControl(m_mmReq.withPosition(setpoint1));
-    //   LaunchRtFlywheel.set(warmup);
-    //   LaunchLtFlywheel.set(warmup);
-    //   }
+  public FrankenArm() {
+    //public void initDefaultCommand() {
       
-    if (m_joystick.a().getAsBoolean()) {
-      m_fx.setControl(m_mmReq.withPosition(setpoint1));
+      m_joystick.a().onTrue(new RunCommand(() -> {
+      //m_fx.setControl(m_mmReq.withPosition(setpoint1));
+      IntakeFeedMotor.setInverted(true);
       IntakeFeedMotor.set(fullSpeedAhead);
       IntakeCenterMotor.set(fullSpeedAhead);
       LauncherFeedMotor.set(fullSpeedAhead);
-      shootOff();
+      //shootOff();
       //startChecking();
-      intakeOff();
-      }
+      //intakeOff();
+    }, this));
 
-    if (m_joystick.b().getAsBoolean()) {
+    m_joystick.b().onTrue(new RunCommand(() -> {
       m_fx.setControl(m_mmReq.withPosition(setpoint2));
-      }
+    }, this));
 
-    if (m_joystick.x().getAsBoolean()) {
+    m_joystick.x().onTrue(new RunCommand(() -> {
       m_fx.setControl(m_mmReq.withPosition(setpoint3));
-      }
+    }, this));
 
-    if (m_joystick.y().getAsBoolean()) {
-      //m_fx.setControl(m_mmReq.withPosition(setpoint1));
+    m_joystick.y().onTrue(new RunCommand(() -> {
+      
+      m_fx.setControl(m_mmReq.withPosition(setpoint1));
       LaunchRtFlywheel.set(1);
       LaunchLtFlywheel.set(1);
       LauncherFeedMotor.set(1);
-      }
-    }
+    }, this));
+  }
 
     public void shootOff(){
     LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
@@ -107,10 +105,12 @@ public class FrankenArm extends SubsystemBase {
   
   public void intakeOff(){
     LaserCan.Measurement measurement = LaunchSensor.getMeasurement();
-    if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 100) {
+    if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 300) {
       LauncherFeedMotor.set(Die);
     }
   }
+
+}
 
 // public void checkSet() {
 //     double currentPosition = m_ex.getPosition().getValue(); // Extract the value from StatusSignal
@@ -142,4 +142,4 @@ public class FrankenArm extends SubsystemBase {
 //         }).start();
 //     }
 // }
-}
+//}
