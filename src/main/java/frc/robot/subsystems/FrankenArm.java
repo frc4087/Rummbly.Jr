@@ -14,7 +14,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.InvertedValue;
+//import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -41,13 +41,24 @@ public class FrankenArm extends SubsystemBase {
   public final CANcoder armSensor = new CANcoder(TunerConstants.ArmSensor);
   public final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0);
 
-  public static final double TOLERANCE = 3.0;
-  public static final double SETPOINT1 = 5;
-  public static final double SETPOINT2 = 10;
-  public static final double SETPOINT3 = 20;  
+  public static final double TOLERANCE = 5.0;
+  public static final double SETPOINTIntake = 4.0;
+  public static final double SETPOINTFar = 2.9;
+  public static final double SETPOINTNear = 42.436;  
+  public static final double SETPOINTAmp = 116.467;
+  private static final double MAX_INTAKE_DISTANCE_MM = 200.0;
+  private static final double HYSTERESIS_MM = 10.0;
+  private static final double MAX_LAUNCH_DISTANCE_MM = 10.0;
+  private static final double HYSTERESIS2_MM = 10.0;
+
+
+  private boolean isObjectDetected = false;
   public boolean isChecking = false;
+  private boolean isObject2Detected = false;
+  private boolean isIntakeConfigured = false;
 
   public FrankenArm() {
+    
     TalonFXConfiguration armMotorConfig = new TalonFXConfiguration();
     
     // Create MotionMagicConfigs object
@@ -83,22 +94,22 @@ public class FrankenArm extends SubsystemBase {
 
   private void initializeArm() {
     // Initial calibration
-    setArmPosition(SETPOINT1); // Move to a known position
+    setArmPosition(SETPOINTIntake); // Move to a known position
 }
 
 public void setArmPosition(double position) {
     armMotor.setControl(motionMagic.withPosition(position));
   }
 
-public void runIntake() {
-    IntakeFeedMotor.getConfigurator().apply(new TalonFXConfiguration());
-    IntakeFeedMotor.setInverted(false);
-    IntakeFeedMotor.set(0.6);
-    IntakeCenterMotor.set(0.6);
-    shootOffIntake();
-    startChecking();
-    shootOffLaucher();
-} 
+// public void runIntake() {
+//     IntakeFeedMotor.getConfigurator().apply(new TalonFXConfiguration());
+//     IntakeFeedMotor.setInverted(false);
+//     IntakeFeedMotor.set(0.6);
+//     IntakeCenterMotor.set(0.6);
+//     // shootOffIntake();
+//     // startChecking();
+//     // shootOffLaucher();
+// } 
 
 public void runLauncher() {
   LaunchRtFlywheel.set(1);
@@ -106,44 +117,107 @@ public void runLauncher() {
   LauncherFeedMotor.set(1);
 }
 
-public void shootOffIntake() {
-  LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
-  if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 300) {
-    IntakeFeedMotor.set(0);
-    IntakeCenterMotor.set(0);
-    LauncherFeedMotor.set(0);
-  }
-  }
+public void runIntake() {
+  IntakeFeedMotor.set(0.6);
+  IntakeCenterMotor.set(0.6);
+  LauncherFeedMotor.set(0.6);
+  //shootOffIntake();
+  // startChecking();
+  shootOffLauncher();
+}
 
-public void shootOffLaucher() {
-  LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
-  if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 300) {
-    LauncherFeedMotor.set(0);
-  }
-  }
+// public void shootOffIntake() {
+//   LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
+//   if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 200.0) {
+//     IntakeFeedMotor.set(0);
+//     IntakeCenterMotor.set(0);
+//     LauncherFeedMotor.set(0);
+//   }
+//   }
 
-  public void startChecking() {
-    if (!isChecking) {
-        isChecking = true;
-        new Thread(() -> {
-            while (isChecking) {
-                double currentPosition = armSensor.getPosition().getValue(); // Extract the value from StatusSignal
-                if (Math.abs(currentPosition - SETPOINT1) <= TOLERANCE) {
-                    LauncherFeedMotor.set(0.6);
-                    IntakeCenterMotor.set(0.6);
-                    isChecking = false; // Stop checking once within tolerance
-                } else {
-                    LauncherFeedMotor.set(0);
-                }
-                try {
-                    Thread.sleep(100); // Sleep for a short period to avoid busy-waiting
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }).start();
+  // public void shootOffIntake() {
+  //   LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
+
+  //   if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+  //       if (!isObjectDetected && measurement.distance_mm <= MAX_INTAKE_DISTANCE_MM) {
+  //           isObjectDetected = true;
+  //           IntakeFeedMotor.set(0);
+  //           IntakeCenterMotor.set(0);
+  //           System.out.println("Object detected, stopping intake motors");
+  //       } else if (isObjectDetected && measurement.distance_mm > MAX_INTAKE_DISTANCE_MM + HYSTERESIS_MM) {
+  //           isObjectDetected = false;
+  //           System.out.println("Object no longer detected, motors can be restarted");
+  //       }
+  //   } else {
+  //       System.out.println("Invalid measurement from LaserCAN");
+  //   }
+  // }
+
+public void shootOffLauncher() {
+    LaserCan.Measurement measurement = LaunchSensor.getMeasurement();
+
+    if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+        if (!isObject2Detected && measurement.distance_mm <= MAX_LAUNCH_DISTANCE_MM) {
+            isObject2Detected = true;
+            IntakeFeedMotor.set(0);
+            IntakeCenterMotor.set(0);
+            LauncherFeedMotor.set(0);
+            System.out.println("Object detected, stopping intake motors");
+        } else if (isObject2Detected && measurement.distance_mm > MAX_LAUNCH_DISTANCE_MM + HYSTERESIS2_MM) {
+            isObject2Detected = false;
+            System.out.println("Object no longer detected, motors can be restarted");
+        }
+    } else {
+        System.out.println("Invalid measurement from LaserCAN");
     }
 }
+
+private void configureLaserCAN() {
+  LaunchSensor.setRangingMode(LaserCan.RangingMode.SHORT);
+  LaunchSensor.setRegionOfInterest(0, 0, 16, 16);
+  LaunchSensor.setTimingBudget(33000);
+  LaunchSensor.setRangeContinuous();
+
+  while (!IntakeSensor.isRangeValid()) {
+      Timer.delay(0.01);
+  }
+
+  System.out.println("LaserCAN configuration complete");
+}
+
+// public void shootOffLaucher() {
+//   LaserCan.Measurement measurement = LaunchSensor.getMeasurement();
+//   if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm <= 2.0) {
+//     IntakeFeedMotor.set(0);
+//     IntakeCenterMotor.set(0);
+//     LauncherFeedMotor.set(0);
+//   }
+//   }
+
+  // public void startChecking() {
+  //   if (!isChecking) {
+  //       isChecking = true;
+  //       new Thread(() -> {
+  //           while (isChecking) {
+  //               double currentPosition = armSensor.getPosition().getValue(); // Extract the value from StatusSignal
+  //               if (Math.abs(currentPosition - SETPOINTIntake) <= TOLERANCE) {
+  //                   LauncherFeedMotor.set(0.6);
+  //                   IntakeCenterMotor.set(0.6);
+  //                   isChec
+  // king = false; // Stop checking once within tolerance
+  //               } else {
+  //                   LauncherFeedMotor.set(0);
+  //                   IntakeCenterMotor.set(0);
+  //               }
+  //               try {
+  //                   Thread.sleep(100); // Sleep for a short period to avoid busy-waiting
+  //               } catch (InterruptedException e) {
+  //                   Thread.currentThread().interrupt();
+  //               }
+  //           }
+  //       }).start();
+  //   }
+//}
 }
 
 // public static final double FULL_SPEED = 0.65;

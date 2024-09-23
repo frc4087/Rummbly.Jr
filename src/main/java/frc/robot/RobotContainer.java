@@ -9,13 +9,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.LaserCan.Measurement;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FrankenArm;
+import java.lang.reflect.Method;
 
 public class RobotContainer {
   
@@ -42,6 +43,7 @@ public class RobotContainer {
   Trigger yButton = m_joystick.y();
   Trigger aButton = m_joystick.a();
   Trigger bButton = m_joystick.b();
+  Trigger bTrigger = m_joystick.rightTrigger();
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
@@ -85,32 +87,32 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
 
     m_joystick.a().onTrue(new RunCommand(() -> {
-      frankenArm.setArmPosition(FrankenArm.SETPOINT1);
+      frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runIntake();
     }, frankenArm));
 
-    m_joystick.b().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINT2), frankenArm));
+    m_joystick.b().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTNear), frankenArm));
 
-    m_joystick.x().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINT3), frankenArm));
+    m_joystick.rightTrigger().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTFar), frankenArm));
+
+    m_joystick.x().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTAmp), frankenArm));
 
     m_joystick.y().onTrue(new RunCommand(() -> {
-      frankenArm.setArmPosition(FrankenArm.SETPOINT1);
+      frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runLauncher();
     }, frankenArm));
 
   }
 
-  public void teleoperiodic() {
-    LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
-    double[] measurements = { measurement.getValue1(), measurement.getValue2() }; // Adjust based on your Measurement class
-    SmartDashboard.putNumberArray("ISM", measurements);
-  }
+//   public void teleoperiodic() {
+//     LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
+//     double distance = measurement.distance_mm; // Access the field from the instance
+//     SmartDashboard.putNumber("ISM", distance);
+// }
 
   public Command getAutonomousCommand() {
     // Define and return your autonomous command here
     return null;
   }
-
-  
 
 }
