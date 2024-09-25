@@ -48,7 +48,7 @@ public class FrankenArm extends SubsystemBase {
   public static final double SETPOINTAmp = 116.467;
   private static final double MAX_INTAKE_DISTANCE_MM = 200.0;
   private static final double HYSTERESIS_MM = 10.0;
-  private static final double MAX_LAUNCH_DISTANCE_MM = 10.0;
+  private static final double MAX_LAUNCH_DISTANCE_MM = 15.0;
   private static final double HYSTERESIS2_MM = 10.0;
 
 
@@ -105,6 +105,7 @@ public void setArmPosition(double position) {
 //     IntakeFeedMotor.getConfigurator().apply(new TalonFXConfiguration());
 //     IntakeFeedMotor.setInverted(false);
 //     IntakeFeedMotor.set(0.6);
+
 //     IntakeCenterMotor.set(0.6);
 //     // shootOffIntake();
 //     // startChecking();
@@ -118,9 +119,9 @@ public void runLauncher() {
 }
 
 public void runIntake() {
-  IntakeFeedMotor.set(0.6);
-  IntakeCenterMotor.set(0.6);
-  LauncherFeedMotor.set(0.6);
+  IntakeFeedMotor.set(0.5);
+  IntakeCenterMotor.set(0.5);
+  LauncherFeedMotor.set(0.35);
   //shootOffIntake();
   // startChecking();
   shootOffLauncher();
@@ -172,18 +173,18 @@ public void shootOffLauncher() {
     }
 }
 
-private void configureLaserCAN() {
-  LaunchSensor.setRangingMode(LaserCan.RangingMode.SHORT);
-  LaunchSensor.setRegionOfInterest(0, 0, 16, 16);
-  LaunchSensor.setTimingBudget(33000);
-  LaunchSensor.setRangeContinuous();
+// private void configureLaserCAN() {
+//   LaunchSensor.setRangingMode(LaserCan.RangingMode.SHORT);
+//   LaunchSensor.setRegionOfInterest(0, 0, 16, 16);
+//   LaunchSensor.setTimingBudget(33000);
+//   LaunchSensor.setRangeContinuous();
 
-  while (!IntakeSensor.isRangeValid()) {
-      Timer.delay(0.01);
-  }
+//   while (!IntakeSensor.isRangeValid()) {
+//       Timer.delay(0.01);
+//   }
 
-  System.out.println("LaserCAN configuration complete");
-}
+//   System.out.println("LaserCAN configuration complete");
+// }
 
 // public void shootOffLaucher() {
 //   LaserCan.Measurement measurement = LaunchSensor.getMeasurement();

@@ -45,6 +45,8 @@ public class RobotContainer {
   Trigger bButton = m_joystick.b();
   Trigger bTrigger = m_joystick.rightTrigger();
 
+  private static final double MAX_LAUNCH_DISTANCE_MM = 10.0;
+
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
@@ -86,10 +88,21 @@ public class RobotContainer {
     }
     drivetrain.registerTelemetry(logger::telemeterize);
 
+    // m_joystick.a().onTrue(new RunCommand(() -> {
+    //   frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
+    //   frankenArm.runIntake();
+    // }, frankenArm));
+
+
     m_joystick.a().onTrue(new RunCommand(() -> {
       frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runIntake();
-    }, frankenArm));
+  }, frankenArm).until(this::isObjectDetected).finallyDo(interrupted -> {
+      IntakeFeedMotor.set(0);
+      IntakeCenterMotor.set(0);
+      LauncherFeedMotor.set(0);
+      System.out.println("Object detected, stopping intake motors");
+  }));
 
     m_joystick.b().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTNear), frankenArm));
 
@@ -103,6 +116,19 @@ public class RobotContainer {
     }, frankenArm));
 
   }
+
+  public boolean isObjectDetected() {
+    LaserCan.Measurement measurement = LaunchSensor.getMeasurement();
+    
+    if (measurement != null) {
+        return measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT &&
+               measurement.distance_mm <= MAX_LAUNCH_DISTANCE_MM;
+    } else {
+        // Handle the case where measurement is null
+        System.out.println("Measurement is null");
+        return false;
+    }
+}
 
 //   public void teleoperiodic() {
 //     LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
