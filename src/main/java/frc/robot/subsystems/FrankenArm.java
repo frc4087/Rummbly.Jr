@@ -49,7 +49,7 @@ public class FrankenArm extends SubsystemBase {
   public static final double SETPOINTNear = 42.436;  
   public static final double SETPOINTAmp = 116.467;
 
-  public boolean isChecking = false;
+  private boolean beamTripped = false;
 
   public FrankenArm() {
     TalonFXConfiguration armMotorConfig = new TalonFXConfiguration();
@@ -101,9 +101,13 @@ public void runLauncher() {
   LaunchRtFlywheel.set(1);
   LaunchLtFlywheel.set(1);
   LauncherFeedMotor.set(1);
+  IntakeFeedMotor.set(0.0);
+  IntakeCenterMotor.set(0.0);
 }
 
 public void runIntake() {
+  LaunchRtFlywheel.set(0.4);
+  LaunchLtFlywheel.set(0.4);
   IntakeFeedMotor.set(0.5);
   IntakeCenterMotor.set(0.5);
   LauncherFeedMotor.set(0.5);
@@ -117,15 +121,55 @@ LauncherFeedMotor.setNeutralMode(NeutralModeValue.Brake);
 }
 
 public void checkBreakBeam() {
+  if (beamTripped) {
+      // Beam has already been tripped, keep motors off
+      IntakeFeedMotor.set(0);
+      IntakeCenterMotor.set(0);
+      LauncherFeedMotor.set(0);
+      return;
+  }
+
   if (limit.get()) {
-  System.out.println("Break beam intact. Motors can run.");
- } else {
-  System.out.println("Break beam tripped! Stopping motors.");
-  IntakeFeedMotor.set(0);
-  IntakeCenterMotor.set(0);
-  LauncherFeedMotor.set(0);
+      System.out.println("Break beam intact. Motors can run.");
+  } else {
+      System.out.println("Break beam tripped! Stopping motors.");
+      IntakeFeedMotor.set(0);
+      IntakeCenterMotor.set(0);
+      LauncherFeedMotor.set(0);
+      beamTripped = true; // Set the flag to indicate the beam has been tripped
   }
-  }
+}
+
+// public void checkBreakBeam() {
+//   if (beamTripped) {
+//       // Beam has already been tripped, keep motors off
+//       IntakeFeedMotor.set(0);
+//       IntakeCenterMotor.set(0);
+//       LauncherFeedMotor.set(0);
+//       return;
+//   }
+
+//   if (limit.get()) {
+//       System.out.println("Break beam intact. Motors can run.");
+//   } else {
+//       System.out.println("Break beam tripped! Stopping motors.");
+//       IntakeFeedMotor.set(0);
+//       IntakeCenterMotor.set(0);
+//       LauncherFeedMotor.set(0);
+//       beamTripped = true; // Set the flag to indicate the beam has been tripped
+//   }
+// }
+
+// public void checkBreakBeam() {
+//   if (limit.get()) {
+//   System.out.println("Break beam intact. Motors can run.");
+//  } else {
+//   System.out.println("Break beam tripped! Stopping motors.");
+//   IntakeFeedMotor.set(0);
+//   IntakeCenterMotor.set(0);
+//   LauncherFeedMotor.set(0);
+//   }
+//   }
 
 }
 
