@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -22,7 +19,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.generated.TunerConstants;
-import frc.robot.RobotContainer;
 
 import au.grapplerobotics.LaserCan;
 
@@ -44,7 +40,7 @@ public class FrankenArm extends SubsystemBase {
   public final TalonFX armMotor = new TalonFX(TunerConstants.ArmAngle);
   public final CANcoder armSensor = new CANcoder(TunerConstants.ArmSensor);
   public final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0);
-  DigitalInput limit = new DigitalInput(0);
+  DigitalInput limit = new DigitalInput(1);
   
 
   public static final double TOLERANCE = 5.0;
@@ -52,15 +48,10 @@ public class FrankenArm extends SubsystemBase {
   public static final double SETPOINTFar = 2.9;
   public static final double SETPOINTNear = 42.436;  
   public static final double SETPOINTAmp = 116.467;
-  private static final double MAX_LAUNCH_DISTANCE_MM = 10.0;
-  private static final double HYSTERESIS2_MM = 10.0;
 
   public boolean isChecking = false;
-  
-  private boolean isObject2Detected = false;
 
   public FrankenArm() {
-    final DigitalInput beamBreakSensor;
     TalonFXConfiguration armMotorConfig = new TalonFXConfiguration();
     
     // Create MotionMagicConfigs object
@@ -85,7 +76,7 @@ public class FrankenArm extends SubsystemBase {
     CANcoderConfiguration armSensorConfig = new CANcoderConfiguration();
     status = armSensor.getConfigurator().apply(armSensorConfig);
 
-    CoastMode();
+    //CoastMode();
 
     // Set initial positions or states
     armSensor.setPosition(0.0); // Set the position of the CANcoder sensor
@@ -115,29 +106,8 @@ public void runLauncher() {
 public void runIntake() {
   IntakeFeedMotor.set(0.5);
   IntakeCenterMotor.set(0.5);
-  LauncherFeedMotor.set(0.4);
-  //shootOffLauncher();
-  Breaky();
-}
-
-public void shootOffLauncher() {
-    LaserCan.Measurement measurement = LaunchSensor.getMeasurement();
-
-    if (measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
-        if (!isObject2Detected && measurement.distance_mm <= MAX_LAUNCH_DISTANCE_MM) {
-            isObject2Detected = true;
-            IntakeFeedMotor.set(0);
-            IntakeCenterMotor.set(0);
-            LauncherFeedMotor.set(0);
-            CoastMode();
-            System.out.println("Object detected, stopping intake motors");
-        } else if (isObject2Detected && measurement.distance_mm > MAX_LAUNCH_DISTANCE_MM + HYSTERESIS2_MM) {
-            isObject2Detected = false;
-            System.out.println("Object no longer detected, motors can be restarted");
-        }
-    } else {
-        System.out.println("Invalid measurement from LaserCAN");
-    }
+  LauncherFeedMotor.set(0.5);
+  checkBreakBeam();
 }
 
 public void CoastMode(){
@@ -146,28 +116,16 @@ IntakeCenterMotor.setNeutralMode(NeutralModeValue.Brake);
 LauncherFeedMotor.setNeutralMode(NeutralModeValue.Brake);
 }
 
-public void Breaky(){
-if(!limit.get()) {
-  System.out.println("Beam holding strong!");;
-} else {
+public void checkBreakBeam() {
+  if (limit.get()) {
+  System.out.println("Break beam intact. Motors can run.");
+ } else {
+  System.out.println("Break beam tripped! Stopping motors.");
   IntakeFeedMotor.set(0);
   IntakeCenterMotor.set(0);
   LauncherFeedMotor.set(0);
-  //CoastMode();
-}
-}
-
-public void checkBreakBeam() {
-  if (limit.get()) {
-      System.out.println("Break beam tripped! Stopping motors.");
-      IntakeFeedMotor.set(0);
-      IntakeCenterMotor.set(0);
-      LauncherFeedMotor.set(0);
-      //CoastMode();
-  } else {
-      System.out.println("Break beam intact. Motors can run.");
   }
-}
+  }
 
 }
 

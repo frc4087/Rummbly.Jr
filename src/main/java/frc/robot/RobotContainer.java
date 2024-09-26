@@ -34,7 +34,6 @@ public class RobotContainer {
   public TalonFX LaunchRtFlywheel = new TalonFX(TunerConstants.LaunchRtFlywheel);
   public TalonFX LaunchLtFlywheel = new TalonFX(TunerConstants.LaunchLtFlywheel);
   public final CommandXboxController m_joystick = new CommandXboxController(1);
-  DigitalInput limit = new DigitalInput(0);
   //private final BeamBreakSubsystem beamBreakSubsystem = new BeamBreakSubsystem(0);
 
   Trigger xButton = m_joystick.x();
