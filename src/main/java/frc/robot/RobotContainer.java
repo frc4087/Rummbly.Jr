@@ -9,24 +9,20 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import au.grapplerobotics.LaserCan;
-import au.grapplerobotics.LaserCan.Measurement;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FrankenArm;
-import java.lang.reflect.Method;
 
 public class RobotContainer {
   
@@ -38,6 +34,8 @@ public class RobotContainer {
   public TalonFX LaunchRtFlywheel = new TalonFX(TunerConstants.LaunchRtFlywheel);
   public TalonFX LaunchLtFlywheel = new TalonFX(TunerConstants.LaunchLtFlywheel);
   public final CommandXboxController m_joystick = new CommandXboxController(1);
+  DigitalInput limit = new DigitalInput(0);
+  //private final BeamBreakSubsystem beamBreakSubsystem = new BeamBreakSubsystem(0);
 
   Trigger xButton = m_joystick.x();
   Trigger yButton = m_joystick.y();
@@ -97,12 +95,14 @@ public class RobotContainer {
     m_joystick.a().onTrue(new RunCommand(() -> {
       frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runIntake();
-  }, frankenArm).until(this::isObjectDetected).finallyDo(interrupted -> {
-      IntakeFeedMotor.set(0);
-      IntakeCenterMotor.set(0);
-      LauncherFeedMotor.set(0);
-      System.out.println("Object detected, stopping intake motors");
-  }));
+    }));
+  // }, frankenArm).until(this::isObjectDetected).finallyDo(interrupted -> {
+  //     IntakeFeedMotor.set(0);
+  //     IntakeCenterMotor.set(0);
+  //     LauncherFeedMotor.set(0);
+  //     //frankenArm.CoastMode();
+  //     System.out.println("Object detected, stopping intake motors");
+  // }));
 
     m_joystick.b().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTNear), frankenArm));
 
@@ -111,7 +111,7 @@ public class RobotContainer {
     m_joystick.x().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTAmp), frankenArm));
 
     m_joystick.y().onTrue(new RunCommand(() -> {
-      frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
+      //frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runLauncher();
     }, frankenArm));
 
@@ -130,15 +130,8 @@ public class RobotContainer {
     }
 }
 
-//   public void teleoperiodic() {
-//     LaserCan.Measurement measurement = IntakeSensor.getMeasurement();
-//     double distance = measurement.distance_mm; // Access the field from the instance
-//     SmartDashboard.putNumber("ISM", distance);
-// }
-
   public Command getAutonomousCommand() {
     // Define and return your autonomous command here
     return null;
   }
-
 }
