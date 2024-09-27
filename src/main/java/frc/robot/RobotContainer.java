@@ -119,19 +119,6 @@ public class RobotContainer {
 
   }
 
-  public boolean isObjectDetected() {
-    LaserCan.Measurement measurement = LaunchSensor.getMeasurement();
-    
-    if (measurement != null) {
-        return measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT &&
-               measurement.distance_mm <= MAX_LAUNCH_DISTANCE_MM;
-    } else {
-        // Handle the case where measurement is null
-        System.out.println("Measurement is null");
-        return false;
-    }
-}
-
   public Command getAutonomousCommand() {
     // Define and return your autonomous command here
     return null;

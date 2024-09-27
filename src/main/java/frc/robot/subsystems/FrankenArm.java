@@ -16,8 +16,12 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 //import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 
 import au.grapplerobotics.LaserCan;
@@ -41,7 +45,9 @@ public class FrankenArm extends SubsystemBase {
   public final CANcoder armSensor = new CANcoder(TunerConstants.ArmSensor);
   public final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0);
   DigitalInput limit = new DigitalInput(1);
-  
+  Trigger breakBeamTrigger = new Trigger(limit::get);
+  //private boolean beamTripped = false;
+
 
   public static final double TOLERANCE = 5.0;
   public static final double SETPOINTIntake = 4.0;
@@ -50,8 +56,13 @@ public class FrankenArm extends SubsystemBase {
   public static final double SETPOINTAmp = 116.467;
 
   private boolean beamTripped = false;
+  //private boolean noteDetected = false;
+  public boolean intakeOn = false;
 
   public FrankenArm() {
+
+
+    
     TalonFXConfiguration armMotorConfig = new TalonFXConfiguration();
     
     // Create MotionMagicConfigs object
@@ -84,7 +95,6 @@ public class FrankenArm extends SubsystemBase {
     // Set neutral mode
     armMotor.setNeutralMode(NeutralModeValue.Brake);
   
-
     initializeArm();
   }
 
@@ -96,7 +106,7 @@ public class FrankenArm extends SubsystemBase {
 public void setArmPosition(double position) {
     armMotor.setControl(motionMagic.withPosition(position));
   }
-
+  
 public void runLauncher() {
   LaunchRtFlywheel.set(1);
   LaunchLtFlywheel.set(1);
@@ -106,6 +116,7 @@ public void runLauncher() {
 }
 
 public void runIntake() {
+  intakeOn = true;
   LaunchRtFlywheel.set(0.4);
   LaunchLtFlywheel.set(0.4);
   IntakeFeedMotor.set(0.5);
@@ -120,25 +131,105 @@ IntakeCenterMotor.setNeutralMode(NeutralModeValue.Brake);
 LauncherFeedMotor.setNeutralMode(NeutralModeValue.Brake);
 }
 
-public void checkBreakBeam() {
-  if (beamTripped) {
-      // Beam has already been tripped, keep motors off
-      IntakeFeedMotor.set(0);
-      IntakeCenterMotor.set(0);
-      LauncherFeedMotor.set(0);
-      return;
-  }
-
-  if (limit.get()) {
-      System.out.println("Break beam intact. Motors can run.");
-  } else {
-      System.out.println("Break beam tripped! Stopping motors.");
-      IntakeFeedMotor.set(0);
-      IntakeCenterMotor.set(0);
-      LauncherFeedMotor.set(0);
-      beamTripped = true; // Set the flag to indicate the beam has been tripped
-  }
+private void stopMotors() {
+  IntakeFeedMotor.set(0);
+  IntakeCenterMotor.set(0);
+  LauncherFeedMotor.set(0);
 }
+
+// public void checkBreakBeam() {
+//   if (beamTripped) {
+//       // Beam has already been tripped, keep motors off
+//       stopMotors();
+//       return;
+//   }
+
+//   if (limit.get()) {
+//       System.out.println("Break beam intact. Motors can run.");
+//   } else {
+//       System.out.println("Break beam tripped! Stopping motors.");
+//       stopMotors();
+//       beamTripped = true; // Set the flag to indicate the beam has been tripped
+//   }
+// }
+
+@Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        checkBreakBeam();
+    }
+
+    private void checkBreakBeam() {
+        // If the beam has already been tripped, we don't need to check anymore
+        if (beamTripped==true) {
+            stopMotors();
+        }
+
+        // If a note hasn't been detected yet, check for it
+        // if (!noteDetected) {
+        //     if (!limit.get()) {
+        //         System.out.println("Note detected! Starting to check break beam.");
+        //         noteDetected = true;
+        //     }
+        //     return; // Exit the method if we're still waiting for a note
+        // }
+
+        if(intakeOn==true) {
+          BreakBeam();
+        }else{
+          System.out.println("Intake isn't currently running");
+        }
+
+        // At this point, a note has been detected, but the beam hasn't been tripped yet
+        // if (limit.get()) {
+        //     System.out.println("Break beam intact. Motor can run.");
+        //     beamTripped = false;
+        // } else {
+        //     System.out.println("Break beam tripped! Stopping motor.");
+        //     stopMotors();
+        //     beamTripped = true; // Set the flag to indicate the beam has been tripped
+        // }
+
+        // if (beamTripped==true) {
+        //     stopMotors();
+        // }
+    }
+
+      public void BreakBeam(){
+        if (limit.get()) {
+            System.out.println("Break beam intact. Motor can run.");
+            beamTripped = false;
+        } else {
+            System.out.println("Break beam tripped! Stopping motor.");
+            stopMotors();
+            beamTripped = true; // Set the flag to indicate the beam has been tripped
+        }
+      }
+
+    // public void BreakBeam(){
+    //   if (limit.get()) {
+    //         System.out.println("Break beam intact. Motor can run.");
+    //         beamTripped = false;
+    //     } else {
+    //         System.out.println("Break beam tripped! Stopping motor.");
+    //         stopMotors();
+    //         beamTripped = true; 
+    //         intakeOn = false;
+    //     }
+
+    //     if (beamTripped==true) {
+    //         stopMotors();
+    //     }
+    // }
+
+    // public void resetBreakBeamSystem() {
+    //     beamTripped = false;
+    //     System.out.println("Break beam system reset.");
+    // }
+
+    
+
+    // Add other methods for controlling the FrankenArm as needed
 
 // public void checkBreakBeam() {
 //   if (beamTripped) {
