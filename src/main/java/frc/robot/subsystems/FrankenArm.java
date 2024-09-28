@@ -53,8 +53,9 @@ public class FrankenArm extends SubsystemBase {
   public static final double TOLERANCE = 5.0;
   public static final double SETPOINTIntake = 4.0;
   public static final double SETPOINTFar = 2.9;
-  public static final double SETPOINTNear = 42.436;  
-  public static final double SETPOINTAmp = .467;
+  public static final double SETPOINTNear = 42;  
+  public static final double SETPOINTAmp = 46.467;
+  public static final double SETPOINTClose = 12;
 
   private boolean beamTripped = false;
   //private boolean noteDetected = false;
@@ -106,8 +107,8 @@ public void setArmPosition(double position) {
   }
   
 public void runLauncher() {
-  LaunchRtFlywheel.set(1);
-  LaunchLtFlywheel.set(1);
+  LaunchRtFlywheel.set(0.8);
+  LaunchLtFlywheel.set(0.8);
   LauncherFeedMotor.set(1);
   IntakeFeedMotor.set(1);
   IntakeCenterMotor.set(0);
