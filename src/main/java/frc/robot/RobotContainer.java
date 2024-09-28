@@ -97,14 +97,13 @@ public class RobotContainer {
     m_joystick.a().onTrue(new RunCommand(() -> {
       frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runIntake();
-    }));
-  // }, frankenArm).until(this::isObjectDetected).finallyDo(interrupted -> {
-  //     IntakeFeedMotor.set(0);
-  //     IntakeCenterMotor.set(0);
-  //     LauncherFeedMotor.set(0);
-  //     //frankenArm.CoastMode();
-  //     System.out.println("Object detected, stopping intake motors");
-  // }));
+    }, frankenArm).onlyWhile(frankenArm.limit::get).finallyDo(interrupted -> {
+      IntakeFeedMotor.set(0);
+      IntakeCenterMotor.set(0);
+      LauncherFeedMotor.set(0);
+      //frankenArm.CoastMode();
+      System.out.println("Object detected, stopping intake motors");
+  }));
 
     m_joystick.b().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTNear), frankenArm));
 

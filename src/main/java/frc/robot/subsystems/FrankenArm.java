@@ -44,7 +44,7 @@ public class FrankenArm extends SubsystemBase {
   public final TalonFX armMotor = new TalonFX(TunerConstants.ArmAngle);
   public final CANcoder armSensor = new CANcoder(TunerConstants.ArmSensor);
   public final MotionMagicVoltage motionMagic = new MotionMagicVoltage(0);
-  DigitalInput limit = new DigitalInput(1);
+  public DigitalInput limit = new DigitalInput(1);
   Trigger breakBeamTrigger = new Trigger(limit::get);
   //private boolean beamTripped = false;
 
@@ -111,8 +111,8 @@ public void runLauncher() {
   LaunchRtFlywheel.set(1);
   LaunchLtFlywheel.set(1);
   LauncherFeedMotor.set(1);
-  IntakeFeedMotor.set(0.0);
-  IntakeCenterMotor.set(0.0);
+  IntakeFeedMotor.set(1);
+  IntakeCenterMotor.set(0);
 }
 
 public void runIntake() {
@@ -162,7 +162,7 @@ private void stopMotors() {
     private void checkBreakBeam() {
         // If the beam has already been tripped, we don't need to check anymore
         if (beamTripped==true) {
-            stopMotors();
+            //stopMotors();
         }
 
         // If a note hasn't been detected yet, check for it
@@ -200,8 +200,9 @@ private void stopMotors() {
             System.out.println("Break beam intact. Motor can run.");
             beamTripped = false;
         } else {
+            intakeOn = false;
             System.out.println("Break beam tripped! Stopping motor.");
-            stopMotors();
+            //stopMotors();
             beamTripped = true; // Set the flag to indicate the beam has been tripped
         }
       }
