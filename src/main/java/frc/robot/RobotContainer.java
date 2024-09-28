@@ -43,8 +43,9 @@ public class RobotContainer {
   Trigger yButton = m_joystick.y();
   Trigger aButton = m_joystick.a();
   Trigger bButton = m_joystick.b();
-  Trigger bTrigger = m_joystick.rightTrigger();
-  Trigger aTrigger = m_joystick.leftTrigger();
+  Trigger bBumpTrigger = m_joystick.rightBumper();
+  Trigger aBumpTrigger = m_joystick.leftBumper();
+  Trigger cTrigger = m_joystick.rightTrigger();
 
   private static final double MAX_LAUNCH_DISTANCE_MM = 10.0;
 
@@ -95,7 +96,7 @@ public class RobotContainer {
     // }, frankenArm));
 
 
-    m_joystick.leftTrigger().onTrue(new RunCommand(() -> {
+    m_joystick.rightBumper().onTrue(new RunCommand(() -> {
       frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runIntake();
     }, frankenArm).onlyWhile(frankenArm.limit::get).finallyDo(interrupted -> {
@@ -106,16 +107,20 @@ public class RobotContainer {
       System.out.println("Object detected, stopping intake motors");
   }));
 
-    m_joystick.b().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTNear), frankenArm));
+    m_joystick.a().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTNear), frankenArm));
 
-    m_joystick.rightTrigger().onTrue(new RunCommand(() -> {
-      frankenArm.setArmPosition(FrankenArm.SETPOINTAmp);
+    m_joystick.leftBumper().onTrue(new RunCommand(() -> {
+      //frankenArm.setArmPosition(FrankenArm.SETPOINTAmp);
       frankenArm.runAmp();
     }, frankenArm));
 
-    m_joystick.x().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTFar), frankenArm));
-
     m_joystick.y().onTrue(new RunCommand(() -> {
+      frankenArm.setArmPosition(FrankenArm.SETPOINTAmp);
+    }, frankenArm));
+
+    m_joystick.b().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTFar), frankenArm));
+
+    m_joystick.rightTrigger().onTrue(new RunCommand(() -> {
       //frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runLauncher();
     }, frankenArm));

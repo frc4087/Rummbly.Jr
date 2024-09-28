@@ -54,16 +54,13 @@ public class FrankenArm extends SubsystemBase {
   public static final double SETPOINTIntake = 4.0;
   public static final double SETPOINTFar = 2.9;
   public static final double SETPOINTNear = 42.436;  
-  public static final double SETPOINTAmp = 116.467;
+  public static final double SETPOINTAmp = .467;
 
   private boolean beamTripped = false;
   //private boolean noteDetected = false;
   public boolean intakeOn = false;
 
   public FrankenArm() {
-
-
-    
     TalonFXConfiguration armMotorConfig = new TalonFXConfiguration();
     
     // Create MotionMagicConfigs object
@@ -127,23 +124,9 @@ public void runIntake() {
 }
 
 public void runAmp() {
-  // LaunchRtFlywheel.setInverted(true);
-  // LaunchLtFlywheel.setInverted(true);
-  // LauncherFeedMotor.setInverted(true);
- 
   LaunchRtFlywheel.set(-1.0);
   LaunchLtFlywheel.set(-1.0);
   LauncherFeedMotor.set(-1.0);
- 
-  // Timer.delay(1);
-
-  // LaunchRtFlywheel.set(0);
-  // LaunchLtFlywheel.set(0);
-  // LauncherFeedMotor.set(0);
- 
-  // LaunchRtFlywheel.setInverted(false);
-  // LaunchLtFlywheel.setInverted(false);
-  // LauncherFeedMotor.setInverted(false);
 }
 
 public void CoastMode(){
