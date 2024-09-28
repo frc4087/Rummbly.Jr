@@ -44,6 +44,7 @@ public class RobotContainer {
   Trigger aButton = m_joystick.a();
   Trigger bButton = m_joystick.b();
   Trigger bTrigger = m_joystick.rightTrigger();
+  Trigger aTrigger = m_joystick.leftTrigger();
 
   private static final double MAX_LAUNCH_DISTANCE_MM = 10.0;
 
@@ -94,7 +95,7 @@ public class RobotContainer {
     // }, frankenArm));
 
 
-    m_joystick.a().onTrue(new RunCommand(() -> {
+    m_joystick.leftTrigger().onTrue(new RunCommand(() -> {
       frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);
       frankenArm.runIntake();
     }, frankenArm).onlyWhile(frankenArm.limit::get).finallyDo(interrupted -> {
@@ -107,9 +108,12 @@ public class RobotContainer {
 
     m_joystick.b().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTNear), frankenArm));
 
-    m_joystick.rightTrigger().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTFar), frankenArm));
+    m_joystick.rightTrigger().onTrue(new RunCommand(() -> {
+      frankenArm.setArmPosition(FrankenArm.SETPOINTAmp);
+      frankenArm.runAmp();
+    }, frankenArm));
 
-    m_joystick.x().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTAmp), frankenArm));
+    m_joystick.x().onTrue(new RunCommand(() -> frankenArm.setArmPosition(FrankenArm.SETPOINTFar), frankenArm));
 
     m_joystick.y().onTrue(new RunCommand(() -> {
       //frankenArm.setArmPosition(FrankenArm.SETPOINTIntake);

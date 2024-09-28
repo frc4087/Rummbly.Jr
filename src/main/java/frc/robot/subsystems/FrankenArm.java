@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 //import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -123,6 +124,26 @@ public void runIntake() {
   IntakeCenterMotor.set(0.5);
   LauncherFeedMotor.set(0.5);
   checkBreakBeam();
+}
+
+public void runAmp() {
+  // LaunchRtFlywheel.setInverted(true);
+  // LaunchLtFlywheel.setInverted(true);
+  // LauncherFeedMotor.setInverted(true);
+ 
+  LaunchRtFlywheel.set(-1.0);
+  LaunchLtFlywheel.set(-1.0);
+  LauncherFeedMotor.set(-1.0);
+ 
+  // Timer.delay(1);
+
+  // LaunchRtFlywheel.set(0);
+  // LaunchLtFlywheel.set(0);
+  // LauncherFeedMotor.set(0);
+ 
+  // LaunchRtFlywheel.setInverted(false);
+  // LaunchLtFlywheel.setInverted(false);
+  // LauncherFeedMotor.setInverted(false);
 }
 
 public void CoastMode(){
